@@ -6,7 +6,8 @@ namespace DiscordPugBot
     {
         static void Main(string[] args)
         {
-            Console.ReadLine();
+            var bot = new Bot();
+            bot.Start().GetAwaiter().GetResult();
         }
     }
 }

@@ -259,16 +259,16 @@ namespace DiscordPugBot {
             this.tableRegistrations = new RegistrationsDataTable();
             base.Tables.Add(this.tableRegistrations);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Players_Registrations", new global::System.Data.DataColumn[] {
-                        this.tablePlayers.IDColumn}, new global::System.Data.DataColumn[] {
-                        this.tableRegistrations.Player_IDColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Events_Registrations", new global::System.Data.DataColumn[] {
+                        this.tableEvents.IDColumn}, new global::System.Data.DataColumn[] {
+                        this.tableRegistrations.Event_IDColumn});
             this.tableRegistrations.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Events_Registrations", new global::System.Data.DataColumn[] {
-                        this.tableEvents.IDColumn}, new global::System.Data.DataColumn[] {
-                        this.tableRegistrations.Event_IDColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Players_Registrations", new global::System.Data.DataColumn[] {
+                        this.tablePlayers.IDColumn}, new global::System.Data.DataColumn[] {
+                        this.tableRegistrations.Player_IDColumn});
             this.tableRegistrations.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -824,6 +824,13 @@ namespace DiscordPugBot {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public PlayersRow FindByID(System.Guid ID) {
+                return ((PlayersRow)(this.Rows.Find(new object[] {
+                            ID})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 PlayersDataTable cln = ((PlayersDataTable)(base.Clone()));
                 cln.InitVars();
@@ -866,7 +873,7 @@ namespace DiscordPugBot {
                 this.columnModified_On = new global::System.Data.DataColumn("Modified_On", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnModified_On);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnID}, false));
+                                this.columnID}, true));
                 this.columnID.AllowDBNull = false;
                 this.columnID.Unique = true;
                 this.columnBattle_Tag.MaxLength = 50;
@@ -1925,7 +1932,7 @@ namespace DiscordPugBot.LimitBreakPugsDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         private void InitCommandCollection() {
-            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[2];
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[3];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT ID, Scheduled_Date, Created_On, Discord_Message_ID FROM dbo.Events";
@@ -1937,6 +1944,12 @@ namespace DiscordPugBot.LimitBreakPugsDataSetTableAdapters {
             this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Scheduled_Date", global::System.Data.SqlDbType.DateTime, 8, global::System.Data.ParameterDirection.Input, 0, 0, "Scheduled_Date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Discord_Message_ID", global::System.Data.SqlDbType.VarChar, 50, global::System.Data.ParameterDirection.Input, 0, 0, "Discord_Message_ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[2] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[2].Connection = this.Connection;
+            this._commandCollection[2].CommandText = "SELECT        ID, Scheduled_Date, Created_On, Discord_Message_ID\r\nFROM           " +
+                " Events\r\nWHERE        (Discord_Message_ID = @Discord_Message_ID)";
+            this._commandCollection[2].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[2].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Discord_Message_ID", global::System.Data.SqlDbType.VarChar, 50, global::System.Data.ParameterDirection.Input, 0, 0, "Discord_Message_ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1958,6 +1971,42 @@ namespace DiscordPugBot.LimitBreakPugsDataSetTableAdapters {
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
         public virtual LimitBreakPugsDataSet.EventsDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
+            LimitBreakPugsDataSet.EventsDataTable dataTable = new LimitBreakPugsDataSet.EventsDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, false)]
+        public virtual int Old_FindByDiscordMsgID(LimitBreakPugsDataSet.EventsDataTable dataTable, string Discord_Message_ID) {
+            this.Adapter.SelectCommand = this.CommandCollection[2];
+            if ((Discord_Message_ID == null)) {
+                this.Adapter.SelectCommand.Parameters[0].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[0].Value = ((string)(Discord_Message_ID));
+            }
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, false)]
+        public virtual LimitBreakPugsDataSet.EventsDataTable FindByDiscordMsgID(string Discord_Message_ID) {
+            this.Adapter.SelectCommand = this.CommandCollection[2];
+            if ((Discord_Message_ID == null)) {
+                this.Adapter.SelectCommand.Parameters[0].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[0].Value = ((string)(Discord_Message_ID));
+            }
             LimitBreakPugsDataSet.EventsDataTable dataTable = new LimitBreakPugsDataSet.EventsDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
@@ -2268,6 +2317,42 @@ namespace DiscordPugBot.LimitBreakPugsDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, false)]
+        public virtual int FillByDiscordID(LimitBreakPugsDataSet.PlayersDataTable dataTable, string Discord_Tag) {
+            this.Adapter.SelectCommand = this.CommandCollection[1];
+            if ((Discord_Tag == null)) {
+                this.Adapter.SelectCommand.Parameters[0].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[0].Value = ((string)(Discord_Tag));
+            }
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, false)]
+        public virtual LimitBreakPugsDataSet.PlayersDataTable FindByDiscordID(string Discord_Tag) {
+            this.Adapter.SelectCommand = this.CommandCollection[1];
+            if ((Discord_Tag == null)) {
+                this.Adapter.SelectCommand.Parameters[0].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[0].Value = ((string)(Discord_Tag));
+            }
+            LimitBreakPugsDataSet.PlayersDataTable dataTable = new LimitBreakPugsDataSet.PlayersDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         public virtual int Update(LimitBreakPugsDataSet.PlayersDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
@@ -2349,40 +2434,6 @@ namespace DiscordPugBot.LimitBreakPugsDataSetTableAdapters {
                 if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
                     this.Adapter.InsertCommand.Connection.Close();
                 }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual object FindByDiscordID(string Discord_Tag) {
-            global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[1];
-            if ((Discord_Tag == null)) {
-                command.Parameters[0].Value = global::System.DBNull.Value;
-            }
-            else {
-                command.Parameters[0].Value = ((string)(Discord_Tag));
-            }
-            global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
-            if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                command.Connection.Open();
-            }
-            object returnValue;
-            try {
-                returnValue = command.ExecuteScalar();
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    command.Connection.Close();
-                }
-            }
-            if (((returnValue == null) 
-                        || (returnValue.GetType() == typeof(global::System.DBNull)))) {
-                return null;
-            }
-            else {
-                return ((object)(returnValue));
             }
         }
         

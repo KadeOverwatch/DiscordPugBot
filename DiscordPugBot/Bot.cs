@@ -11,6 +11,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using DSharpPlus.EventArgs;
+using DiscordPugBot.Entities;
 
 namespace DiscordPugBot
 {
@@ -73,7 +74,43 @@ namespace DiscordPugBot
 
         private async Task OnReactionAdded(MessageReactionAddEventArgs e)
         {
-            
+            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID)
+            {
+                /*
+                string formattedDTag = e.User.Username + "#" + e.User.Discriminator;
+                Player player = new Player();
+                PugEvent eve = new PugEvent();
+                LimitBreakPugsDataSet.PlayersDataTable dt = Data.playersTableAdapter.FindByDiscordID(e.User.Username + "#" + e.User.Discriminator);
+                */
+
+                LimitBreakPugsDataSet.PlayersRow  p_row = (LimitBreakPugsDataSet.PlayersRow)Data.limitBreakPugsDataSet.Tables["Players"].Select($"Discord_Tag = '{e.User.Username}#{e.User.Discriminator}'").FirstOrDefault();
+                LimitBreakPugsDataSet.EventsRow e_row = (LimitBreakPugsDataSet.EventsRow)Data.limitBreakPugsDataSet.Tables["Events"].Select($"Discord_Message_ID = '{e.Message.Id}'").FirstOrDefault();
+
+                /*
+                foreach(LimitBreakPugsDataSet.PlayersRow row in dt)
+                {
+                    if (row.Discord_Tag == formattedDTag)
+                    {
+                        player = new Player(row);
+                    }
+                }
+
+                LimitBreakPugsDataSet.EventsDataTable et = Data.eventsTableAdapter.FindByDiscordMsgID(e.Message.Id.ToString());
+                foreach(LimitBreakPugsDataSet.EventsRow row in et)
+                {
+                    if (row.Discord_Message_ID == e.Message.Id.ToString())
+                    {
+                        eve = new PugEvent(row);
+                    }
+                }
+                */
+
+                Data.registrationsTableAdapter.InsertQuery(e_row.ID, p_row.ID);
+                await e.Guild.GetMemberAsync(e.User.Id).Result
+                    .SendMessageAsync($"Success?");
+
+
+            }
             await Task.CompletedTask;
         }
 
