@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="Commands\ChatCommands.cs" />
     <Compile Include="ConfigJson.cs" />
     <Compile Include="Helpers\Data.cs" />
     <Compile Include="Entities\PugEvent.cs" />

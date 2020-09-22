@@ -65,6 +65,12 @@ namespace DiscordPugBot
             Fill();
         }
 
+        public void Insert(Player player)
+        {
+            Data.playersTableAdapter.InsertQuery(player.Battle_Tag, player.Discord_Tag, player.Player_Rank, player.Player_Team);
+            Fill();
+        }
+
         public void Fill()
         {
             Data.playersTableAdapter.Fill(Data.players);

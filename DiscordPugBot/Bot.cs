@@ -12,6 +12,9 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using DSharpPlus.EventArgs;
 using DiscordPugBot.Entities;
+using System.Data;
+using DSharpPlus.Entities;
+using DiscordPugBot.Commands;
 
 namespace DiscordPugBot
 {
@@ -61,7 +64,7 @@ namespace DiscordPugBot
 
             Commands = Client.UseCommandsNext(commandsConfig);
 
-            // Commands.RegisterCommands<TestCommands>();
+            Commands.RegisterCommands<ChatCommands>();
 
             await Client.ConnectAsync();
             await Task.Delay(-1);
@@ -76,48 +79,57 @@ namespace DiscordPugBot
         {
             if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID)
             {
-                /*
-                string formattedDTag = e.User.Username + "#" + e.User.Discriminator;
-                Player player = new Player();
-                PugEvent eve = new PugEvent();
-                LimitBreakPugsDataSet.PlayersDataTable dt = Data.playersTableAdapter.FindByDiscordID(e.User.Username + "#" + e.User.Discriminator);
-                */
+                LimitBreakPugsDataSet.PlayersDataTable pdt = Data.playersTableAdapter.GetData();
+                LimitBreakPugsDataSet.EventsDataTable edt = Data.eventsTableAdapter.GetData();
 
-                LimitBreakPugsDataSet.PlayersRow  p_row = (LimitBreakPugsDataSet.PlayersRow)Data.limitBreakPugsDataSet.Tables["Players"].Select($"Discord_Tag = '{e.User.Username}#{e.User.Discriminator}'").FirstOrDefault();
-                LimitBreakPugsDataSet.EventsRow e_row = (LimitBreakPugsDataSet.EventsRow)Data.limitBreakPugsDataSet.Tables["Events"].Select($"Discord_Message_ID = '{e.Message.Id}'").FirstOrDefault();
-
-                /*
-                foreach(LimitBreakPugsDataSet.PlayersRow row in dt)
+                if (pdt.Count > 0)
                 {
-                    if (row.Discord_Tag == formattedDTag)
-                    {
-                        player = new Player(row);
-                    }
-                }
+                    LimitBreakPugsDataSet.PlayersRow p_row = (LimitBreakPugsDataSet.PlayersRow)pdt.Select($"Discord_Tag = '{e.User.Username}#{e.User.Discriminator}'").First();
+                    LimitBreakPugsDataSet.EventsRow e_row = (LimitBreakPugsDataSet.EventsRow)edt.Select($"Discord_Message_ID={edt.Discord_Message_IDColumn}").First();
 
-                LimitBreakPugsDataSet.EventsDataTable et = Data.eventsTableAdapter.FindByDiscordMsgID(e.Message.Id.ToString());
-                foreach(LimitBreakPugsDataSet.EventsRow row in et)
+                    Data.registrationsTableAdapter.InsertQuery(e_row.ID, p_row.ID);
+
+                    await LogChannel($"Discord user {p_row.Discord_Tag} just registered for the pugs being held on {e_row.Scheduled_Date.ToShortDateString()} - {e_row.Scheduled_Date.ToShortTimeString()}");
+                    await e.Guild.GetMemberAsync(e.User.Id).Result
+                        .SendMessageAsync($"You have registered yourself for the pug occuring on {e_row.Scheduled_Date.ToShortDateString()} at {e_row.Scheduled_Date.ToShortTimeString()}. See you there!");
+                }
+                else
                 {
-                    if (row.Discord_Message_ID == e.Message.Id.ToString())
-                    {
-                        eve = new PugEvent(row);
-                    }
+                    await e.Message.DeleteReactionAsync(e.Emoji, e.User);
+                    await e.Guild.GetMemberAsync(e.User.Id).Result.SendMessageAsync($"You need to share some information before I can sign you up for pugs! Please use the command '?help register' in the bot commands channel for more information.");
                 }
-                */
-
-                Data.registrationsTableAdapter.InsertQuery(e_row.ID, p_row.ID);
-                await e.Guild.GetMemberAsync(e.User.Id).Result
-                    .SendMessageAsync($"Success?");
-
-
             }
             await Task.CompletedTask;
         }
 
         private async Task OnReactionRemoved(MessageReactionRemoveEventArgs e)
         {
-            
+            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID)
+            {
+                LimitBreakPugsDataSet.PlayersDataTable pdt = Data.playersTableAdapter.GetData();
+                LimitBreakPugsDataSet.EventsDataTable edt = Data.eventsTableAdapter.GetData();
+
+                if (pdt.Count > 0)
+                {
+                    LimitBreakPugsDataSet.PlayersRow p_row = (LimitBreakPugsDataSet.PlayersRow)pdt.Select($"Discord_Tag = '{e.User.Username}#{e.User.Discriminator}'").First();
+                    LimitBreakPugsDataSet.EventsRow e_row = (LimitBreakPugsDataSet.EventsRow)edt.Select($"Discord_Message_ID={edt.Discord_Message_IDColumn}").First();
+
+
+                    Data.registrationsTableAdapter.UpdateByEventByPlayer(e_row.ID, p_row.ID, true);
+
+                    await LogChannel($"Discord user {p_row.Discord_Tag} just **unregistered** for the pugs being held on {e_row.Scheduled_Date.ToShortDateString()} - {e_row.Scheduled_Date.ToShortTimeString()}");
+                    await e.Guild.GetMemberAsync(e.User.Id).Result
+                        .SendMessageAsync($"You have removed yourself from the pug occuring on {e_row.Scheduled_Date.ToShortDateString()} at {e_row.Scheduled_Date.ToShortTimeString()}. See you next time :(.");
+                }
+            }
+
             await Task.CompletedTask;
+        }
+
+        private async Task LogChannel(string msg)
+        {
+            DSharpPlus.Entities.DiscordChannel channel = await Client.GetChannelAsync(UInt64.Parse(pugBotLogsChannel_ID));
+            DiscordMessage message = await channel.SendMessageAsync(msg);
         }
     }
 }
