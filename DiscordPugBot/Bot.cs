@@ -77,7 +77,7 @@ namespace DiscordPugBot
 
         private async Task OnReactionAdded(MessageReactionAddEventArgs e)
         {
-            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID)
+            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID && e.Emoji.Name == "YEA" && e.User.IsBot == false)
             {
                 LimitBreakPugsDataSet.PlayersDataTable pdt = Data.playersTableAdapter.GetData();
                 LimitBreakPugsDataSet.EventsDataTable edt = Data.eventsTableAdapter.GetData();
@@ -104,7 +104,7 @@ namespace DiscordPugBot
 
         private async Task OnReactionRemoved(MessageReactionRemoveEventArgs e)
         {
-            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID)
+            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID && e.Emoji.Name == "YEA" && e.User.IsBot == false)
             {
                 LimitBreakPugsDataSet.PlayersDataTable pdt = Data.playersTableAdapter.GetData();
                 LimitBreakPugsDataSet.EventsDataTable edt = Data.eventsTableAdapter.GetData();

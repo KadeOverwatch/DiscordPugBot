@@ -68,6 +68,7 @@
       <HintPath>..\packages\System.Collections.Immutable.1.7.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
@@ -145,6 +146,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="Commands\ChatCommands.cs" />
     <Compile Include="ConfigJson.cs" />
+    <Compile Include="Helpers\Config.cs" />
     <Compile Include="Helpers\Data.cs" />
     <Compile Include="Entities\PugEvent.cs" />
     <Compile Include="Entities\Registration.cs" />
@@ -184,6 +186,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PromoteScripts\00_LimitBreakPugs.sql" />
+    <Content Include="PromoteScripts\01_Players.sql" />
+    <Content Include="PromoteScripts\02_tgr_Player_Modified.sql" />
+    <Content Include="PromoteScripts\03_Events.sql" />
+    <Content Include="PromoteScripts\04_Registrations.sql" />
+    <Content Include="PromoteScripts\05_OverwatchMaps.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

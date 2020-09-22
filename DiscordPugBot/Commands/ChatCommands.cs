@@ -1,4 +1,5 @@
 ﻿using DiscordPugBot.Entities;
+using DiscordPugBot.Helpers;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -11,6 +12,12 @@ namespace DiscordPugBot.Commands
     {
         public string pugAnnouncementsChannel_ID = "757595493269504061";
         public string pugBotLogsChannel_ID = "757694234085163028";
+
+        [Command("Debug")]
+        public async Task DebugCommand(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync($"Value: {BotConfig.Get("Test")}").ConfigureAwait(false);
+        }
 
         [Command("CreatePug")]
         public async Task CreatePug(CommandContext ctx, DateTime scheduledDate)
@@ -34,13 +41,26 @@ namespace DiscordPugBot.Commands
             p.Insert();
 
             await LogChannel(ctx, $"Discord user {p.Discord_Tag} registered as a new user with the following bnet account: {_Battle_Tag} - SR: {_Player_Rank}");
-            await msg.ModifyAsync("You have successfully registered! You may now sign up for pugs by reacting to the announcement of them.").ConfigureAwait(false);
+            await msg.ModifyAsync($"Thanks {ctx.User.Username}! You have successfully registered. You may now sign up for pugs by reacting to the announcement of them.").ConfigureAwait(false);
         }
 
         public async Task AnnounceEvent(CommandContext ctx, DateTime scheduledDate, DiscordMessage msg)
         {
             DiscordChannel channel = await ctx.Client.GetChannelAsync(UInt64.Parse(pugAnnouncementsChannel_ID));
             DiscordMessage message = await channel.SendMessageAsync($"New Pug Event scheduled on {scheduledDate.ToShortDateString()} at {scheduledDate.ToShortTimeString()}! Please react to sign-up! (Any reaction)");
+
+            try
+            {
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":YEA:"));
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":NAY:"));
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":DamageLogo:"));
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":TankLogo:"));
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":SupportLogo:"));
+                await message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":ZzZz:"));
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             PugEvent e = new PugEvent();
             e.Scheduled_Date = scheduledDate;

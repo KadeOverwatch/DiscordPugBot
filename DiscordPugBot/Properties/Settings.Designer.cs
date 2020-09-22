@@ -33,5 +33,14 @@ namespace DiscordPugBot.Properties {
                 return ((string)(this["LimitBreakPugsConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("TestValue")]
+        public string Test {
+            get {
+                return ((string)(this["Test"]));
+            }
+        }
     }
 }
