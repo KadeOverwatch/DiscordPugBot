@@ -29,9 +29,9 @@ namespace DiscordPugBot.Entities
         public bool ValidateStructure()
         {
             if (PlayerCount() != 6) return false;
-            if (Members.Count(x => x.Value == "Tank") != 2) return false;
-            if (Members.Count(x => x.Value == "Tank") != 2) return false;
-            if (Members.Count(x => x.Value == "Tank") != 2) return false;
+            if (Members.Count(x => x.Value == ":TankLogo:") != 2) return false;
+            if (Members.Count(x => x.Value == ":DpsLogo:") != 2) return false;
+            if (Members.Count(x => x.Value == ":SupportLogo:") != 2) return false;
             return true;
         }
     }
