@@ -143,13 +143,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bot.cs" />
+    <Compile Include="Entities\Bot.cs" />
     <Compile Include="Commands\ChatCommands.cs" />
-    <Compile Include="ConfigJson.cs" />
+    <Compile Include="Helpers\ConfigJson.cs" />
+    <Compile Include="Entities\Match.cs" />
+    <Compile Include="Entities\Team.cs" />
     <Compile Include="Helpers\Config.cs" />
     <Compile Include="Helpers\Data.cs" />
     <Compile Include="Entities\PugEvent.cs" />
     <Compile Include="Entities\Registration.cs" />
+    <Compile Include="Helpers\TeamGenerator.cs" />
     <Compile Include="LimitBreakPugsDataSet.cs">
       <DependentUpon>LimitBreakPugsDataSet.xsd</DependentUpon>
     </Compile>

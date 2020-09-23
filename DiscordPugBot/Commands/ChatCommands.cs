@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DiscordPugBot.Commands
@@ -13,9 +14,11 @@ namespace DiscordPugBot.Commands
         public string pugAnnouncementsChannel_ID = "757595493269504061";
         public string pugBotLogsChannel_ID = "757694234085163028";
 
-        [Command("Debug")]
-        public async Task DebugCommand(CommandContext ctx, string key, string newValue)
+        [Command("GetMap")]
+        public async Task GetMap(CommandContext ctx)
         {
+            LimitBreakPugsDataSet.OverwatchMapsRow map = Data.overwatchMapsTableAdapter.GetRandomMap().First();
+            await ctx.Channel.SendMessageAsync($"Random Map Selected: {Data.ProperCase(map.Map_Name)} - {Data.ProperCase(map.Map_Type)}. GLHF!");
             await Task.CompletedTask;
         }
 

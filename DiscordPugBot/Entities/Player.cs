@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DSharpPlus.Entities;
+using System;
+using System.Linq;
 
 namespace DiscordPugBot
 {
@@ -14,6 +16,8 @@ namespace DiscordPugBot
         public DateTime Created_On { get; set; }
         public DateTime Modified_On { get; set; }
 
+        public string Role { get; set; }
+
         public Player()
         {
 
@@ -21,6 +25,19 @@ namespace DiscordPugBot
 
         public Player(LimitBreakPugsDataSet.PlayersRow player)
         {
+            this.ID = player.ID;
+            this.Battle_Tag = player.Battle_Tag;
+            this.Discord_Tag = player.Discord_Tag;
+            this.Player_Rank = player.Player_Rank;
+            this.Player_Team = player.Player_Team;
+            this.Created_On = player.Created_On;
+            this.Modified_On = player.Modified_On;
+        }
+
+        public Player(DiscordUser discordUser)
+        {
+            LimitBreakPugsDataSet.PlayersRow player = Data.playersTableAdapter.FindByDiscordID(discordUser.Username + "#" + discordUser.Discriminator).First();
+            
             this.ID = player.ID;
             this.Battle_Tag = player.Battle_Tag;
             this.Discord_Tag = player.Discord_Tag;
