@@ -7,23 +7,12 @@ namespace DiscordPugBot.Helpers
         public static System.Collections.Specialized.NameValueCollection appSettings = ConfigurationManager.AppSettings;
         public static string Get(string keyName)
         {
-            if (appSettings.Count > 0)
+            if (DiscordPugBot.Properties.Settings.Default[keyName] != null)
             {
-                return appSettings[keyName];
+                return DiscordPugBot.Properties.Settings.Default[keyName].ToString();
             } else
             {
                 return "Unknown";
-            }
-        }
-
-        public static void Set(string keyName, string keyValue)
-        {
-            if (appSettings[keyName] == null)
-            {
-                appSettings.Add(keyName, keyValue);
-            } else
-            {
-                appSettings[keyName] = keyValue;
             }
         }
     }

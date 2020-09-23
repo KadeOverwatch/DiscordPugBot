@@ -77,7 +77,8 @@ namespace DiscordPugBot
 
         private async Task OnReactionAdded(MessageReactionAddEventArgs e)
         {
-            if (e.Channel.Id.ToString() == pugAnnouncementsChannel_ID && e.Emoji.Name == "YEA" && e.User.IsBot == false)
+            if (e.User.IsBot || e.Channel.Id.ToString() != pugAnnouncementsChannel_ID) return;
+            if (e.Emoji.Name == "YEA")
             {
                 LimitBreakPugsDataSet.PlayersDataTable pdt = Data.playersTableAdapter.GetData();
                 LimitBreakPugsDataSet.EventsDataTable edt = Data.eventsTableAdapter.GetData();
@@ -99,6 +100,16 @@ namespace DiscordPugBot
                     await e.Guild.GetMemberAsync(e.User.Id).Result.SendMessageAsync($"You need to share some information before I can sign you up for pugs! Please use the command '?help register' in the bot commands channel for more information.");
                 }
             }
+
+            if (e.Emoji.Name == "NAY")
+            {
+                await e.Message.DeleteReactionAsync(DiscordEmoji.FromName(e.Client, ":YEA:"), e.User).ConfigureAwait(false);
+                await e.Message.DeleteReactionAsync(DiscordEmoji.FromName(e.Client, ":DamageLogo:"), e.User).ConfigureAwait(false);
+                await e.Message.DeleteReactionAsync(DiscordEmoji.FromName(e.Client, ":TankLogo:"), e.User).ConfigureAwait(false);
+                await e.Message.DeleteReactionAsync(DiscordEmoji.FromName(e.Client, ":SupportLogo:"), e.User).ConfigureAwait(false);
+                await e.Message.DeleteReactionAsync(DiscordEmoji.FromName(e.Client, ":ZzZz:"), e.User).ConfigureAwait(false);
+            }
+
             await Task.CompletedTask;
         }
 

@@ -14,9 +14,9 @@ namespace DiscordPugBot.Commands
         public string pugBotLogsChannel_ID = "757694234085163028";
 
         [Command("Debug")]
-        public async Task DebugCommand(CommandContext ctx)
+        public async Task DebugCommand(CommandContext ctx, string key, string newValue)
         {
-            await ctx.Channel.SendMessageAsync($"Value: {BotConfig.Get("Test")}").ConfigureAwait(false);
+            await Task.CompletedTask;
         }
 
         [Command("CreatePug")]
